@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jesuitasrioja.holamundo.modelo.Producto;
+import org.jesuitasrioja.holamundo.repository.IProductosRepo;
+import org.jesuitasrioja.holamundo.repository.ProductosRepoMongoDB;
+import org.jesuitasrioja.holamundo.repository.ProductosRepository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,29 +19,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ProductoController {
 	
+	private IProductosRepo repo = new ProductosRepoMongoDB();
+	
 	@GetMapping("/productos")
 	public List<Producto> allProducts(){
-		List<Producto> listaProductos = new ArrayList<Producto>();
-		listaProductos.add(new Producto("1", "tomate", 1.30));
-		listaProductos.add(new Producto("2", "patata", 0.50));
-		listaProductos.add(new Producto("3", "aguacate", 3.0));
 		
-		return listaProductos;
+		return repo.getAll();
 	}
 	
 	@GetMapping("/producto/{id}")
 	public Producto getProducto(@PathVariable String id) {
-		return new Producto(id, "tomate", 1.30);
+		return repo.getById(id);
 	}
 	
 	@GetMapping("/producto")
 	public Producto getProducto2(@RequestParam String id) {
-		return new Producto(id, "tomate", 1.30);
+		return repo.getById(id);
 	}	
 	
 	@PostMapping("/producto")
 	public String postProducto(@RequestBody Producto nuevoProducto) {
-		return "Añadido: "+nuevoProducto.toString();
+		return "Añadido: "+repo.addProducto(nuevoProducto);
 	}
 	
 	@PutMapping("/producto")
@@ -50,7 +51,7 @@ public class ProductoController {
 	@DeleteMapping("/producto/{id}")
 	public String deleteProducto(@PathVariable String id) {
 		
-		return null;
+		return String.valueOf(repo.rmProducto(id));
 	}
 	
 //	@GetMapping("/saludos/{nombre}")
